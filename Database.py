@@ -5,7 +5,7 @@ class Db:
     __connection = None
     __cursor = None
     __database_file_name = "projects.db"
-    __table_names = ("currently_tracking", 'tasks', 'entries')
+    __table_names = ("tasks", "entries", "currently_tracking")
 
     # setup project database
     def __init__(self):
@@ -39,16 +39,6 @@ class Db:
         count = cur.fetchall()[0][0]
         return count == 1
 
-    # Tracking table keeps track of currently selected task, start and end time
-    def make_table_currently_tracking(self):
-        sql = '''CREATE TABLE IF NOT EXISTS tracking (
-         start INTEGER NOT NULL,
-         stop INTEGER,
-         task_id INTEGER,
-         FOREIGN KEY(task_id) REFERENCES tasks(ROWID)
-         );'''
-        self.make_table(sql)
-
     def make_table_tasks(self):
         # id removed because sqlite3 makes an id automatically
         # id          INTEGER NOT NULL PRIMARY KEY,
@@ -59,11 +49,21 @@ class Db:
 
     def make_table_entries(self):
         sql = '''CREATE TABLE  IF NOT EXISTS entries  (
+         task_id     INTEGER,
          start       TEXT NOT NULL,
          stop        TEXT NOT NULL,
-         task_id     INTEGER,
          description TEXT NOT NULL,
          FOREIGN KEY(task_id) REFERENCES tasks(ROWID)
+         );'''
+        self.make_table(sql)
+
+    # Tracking table keeps track of currently selected task, start and end time
+    def make_table_currently_tracking(self):
+        sql = '''CREATE TABLE IF NOT EXISTS tracking (
+         entry_id INTEGER,
+         start INTEGER NOT NULL,
+         stop INTEGER,
+         FOREIGN KEY(entry_id) REFERENCES entries(ROWID)
          );'''
         self.make_table(sql)
 
@@ -84,7 +84,6 @@ class Db:
         values = project_name,
         success_message = "Creating Project '{}'".format(project_name)
         self.insert_sql(sql, values, success_message)
-
 
     # runs sql with arguments
     def insert_sql(self, sql, values, success_message):
