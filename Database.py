@@ -39,7 +39,7 @@ class Db:
                 existing_tables.append(table)
 
         # return true if we needed to create tables else false if they already existed.
-        return len(existing_tables) if 0 else False
+        return len(existing_tables) == 0 if True else False
 
     def table_exist(self, table):
         # SQL from http: // stackoverflow.com / a / 8827554

@@ -46,9 +46,9 @@ if __name__ == '__main__':
 
                 # if table exist then we have already initialized
                 if db.setup_tables():
-                    print("Project already initialized.")
-                else:
                     print("Project initialized.")
+                else:
+                    print("Project already initialized.")
 
             else:
 
