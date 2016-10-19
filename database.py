@@ -13,6 +13,7 @@ class Database:
         try:
             self._connection = sqlite3.connect(self.__database_file_name)
             self._cursor = self._connection.cursor()
+
         except sqlite3.DataError as data_error:
             print("Cannot connect to database", data_error)
             exit()
@@ -20,6 +21,7 @@ class Database:
     # runs sql with arguments
     def insert_sql(self, sql, values, success_message):
         try:
+
             self._cursor.execute(sql, values)
 
             self._connection.commit()
@@ -29,8 +31,26 @@ class Database:
 
         except sqlite3.OperationalError as o_err:
 
-            print("Error Making Table", o_err)
+            print("Operational Error: ", o_err)
 
         except sqlite3.IntegrityError:
 
-            print("Project '{}' already exists".format(values[0]))
+            print("'{}' already exists".format(values[0]))
+
+    # returns one row
+    def select_one_sql(self, sql, values):
+        # localize the connection to return a Row
+        try:
+            con = self._connection
+            con.row_factory = sqlite3.Row
+            cur = con.cursor()
+            cur.execute(sql, values)
+            return cur.fetchone()
+
+        except sqlite3.OperationalError as o_err:
+
+            print("Error Selecting", o_err)
+
+        except sqlite3.ProgrammingError as o_err:
+
+            print("Wrong number of args", values, o_err)

@@ -3,6 +3,9 @@ from database import *
 
 class Task(Database):
 
+    __row_id = None
+    __name = None
+
     def __init__(self):
         Database.__init__(self)
 
@@ -10,8 +13,15 @@ class Task(Database):
         # select * from tasks
         pass
 
-    def get_task_by_id(self, id):
-        pass
+    def get_task_by_id(self, task_id):
+        sql = """SELECT rowid, name FROM tasks WHERE rowid = (?);"""
+        # Convert to tuple
+        values = task_id,
+        row = self.select_one_sql(sql, values)
+
+        if row:
+            self.__row_id = row['rowid']
+            self.__name = row['name']
 
     def create_task(self, task_name):
         sql = """INSERT INTO tasks(name) VALUES (?);"""
@@ -24,4 +34,20 @@ class Task(Database):
         pass
 
     def get_task_by_name(self, name):
-        pass
+        sql = """SELECT rowid, name FROM tasks WHERE name = (?);"""
+        # Convert to tuple
+        values = name,
+        row = self.select_one_sql(sql, values)
+
+        if row:
+            self.__row_id = row['rowid']
+            self.__name = row['name']
+
+    def is_loaded(self):
+        return self.__row_id is not None if True else False
+
+    def __str__(self):
+        if self.is_loaded():
+            return "ID   : {0}\nName : {1}".format(self.__row_id, self.__name)
+        else:
+            return "No Task Loaded"

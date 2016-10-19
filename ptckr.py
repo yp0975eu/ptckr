@@ -83,10 +83,38 @@ if __name__ == '__main__':
 
         elif sys.argv[COMMAND] == 'select':
 
+            # if select is the command and we have exactly
+            # one more arg for a total of 3, then try to load
+            # a task from the database, else print help
             if len(sys.argv) == 3:
 
-                task_name = sys.argv[FIRST_ARG]
-                print('Selecting task {}'.format(task_name))
+                arg1 = sys.argv[FIRST_ARG]
+
+                # initiate a new task
+                task = Task()
+
+                # see if we have a string with all digits
+                # or a string with alphanum
+                # if digits then try to get by id
+                # if alphanum then try by name
+                if arg1.isdigit():
+
+                    task.get_task_by_id(arg1)
+
+                else:
+
+                    task.get_task_by_name(arg1)
+
+                # if the task was able to be loaded enter in into
+                # the activate task by entering it into the
+                # selected table and getting ready
+                # for creating entries
+                if task.is_loaded():
+
+                    print(task)
+
+                else:
+                    print("Could not load task '{0}'".format(arg1))
 
             else:
 
@@ -138,3 +166,4 @@ if __name__ == '__main__':
             Menu.show_help()
     elif len(sys.argv) <= 1:
         Menu.show_help()
+        # Task().get_task_by_id(1123)
