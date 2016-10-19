@@ -1,32 +1,26 @@
-import sqlite3
+from database import *
+# access all parts of the database.py module include sqlite3
 
 
-class Db:
-    __connection = None
-    __cursor = None
-    __database_file_name = ".projects.db"
+class Table(Database):
+    """For creating the actual database tables.py"""
+
     __table_names = ("tasks", "entries", "currently_tracking")
 
-    # setup project database
     def __init__(self):
-        try:
-            self.__connection = sqlite3.connect(self.__database_file_name)
-            self.__cursor = self.__connection.cursor()
-        except sqlite3.DataError as data_error:
-            print("Cannot connect to database", data_error)
-            exit()
+        Database.__init__(self)
 
     def setup_tables(self):
-        # to keep track of existing tables
+        # to keep track of existing tables.py
         existing_tables = []
 
-        # loop through defined tables
+        # loop through defined tables.py
         for table in self.__table_names:
 
-            # see if we have the tables already
+            # see if we have the tables.py already
             if not self.table_exist(table):
 
-                # if we don't have the tables then create them
+                # if we don't have the tables.py then create them
                 try:
                     # this calls the method named: self.make_table_<table_name>
                     getattr(self, 'make_table_' + table)()
@@ -35,16 +29,16 @@ class Db:
                           "Does table '{}' have a corresponding method 'make_table_{}()' ?".format(table, table))
                     print(a_error)
             else:
-                # add to list of existing tables
+                # add to list of existing tables.py
                 existing_tables.append(table)
 
-        # return true if we needed to create tables else false if they already existed.
+        # return true if we needed to create tables.py else false if they already existed.
         return len(existing_tables) == 0 if True else False
 
     def table_exist(self, table):
         # SQL from http: // stackoverflow.com / a / 8827554
         sql = "SELECT count(*) FROM sqlite_master WHERE type='table' AND name = ?;"
-        cur = self.__cursor
+        cur = self._cursor
         # turn into tuple
         value = table,
         cur.execute(sql, value)
@@ -52,8 +46,6 @@ class Db:
         return count == 1
 
     def make_table_tasks(self):
-        # id removed because sqlite3 makes an id automatically
-        # id          INTEGER NOT NULL PRIMARY KEY,
         sql = '''CREATE TABLE  IF NOT EXISTS tasks  (
          name             TEXT NOT NULL
          );'''
@@ -82,30 +74,10 @@ class Db:
     # runs sql with no arguments
     def make_table(self, sql):
         try:
-            cur = self.__cursor
+            cur = self._cursor
             cur.execute(sql)
-            self.__connection.commit()
+            self._connection.commit()
         except sqlite3.OperationalError as o_err:
             print("Error Making Table", o_err)
         except sqlite3.DatabaseError as db_err:
             print("Database Error while making table", db_err)
-
-    def insert_project(self, project_name):
-        sql = """INSERT INTO projects(name) VALUES (?);"""
-        # Convert to tuple
-        values = project_name,
-        success_message = "Creating Project '{}'".format(project_name)
-        self.insert_sql(sql, values, success_message)
-
-    # runs sql with arguments
-    def insert_sql(self, sql, values, success_message):
-        try:
-            self.__cursor.execute(sql, values)
-            self.__connection.commit()
-
-            # if there is no error then print the success message
-            print(success_message)
-        except sqlite3.OperationalError as o_err:
-            print("Error Making Table", o_err)
-        except sqlite3.IntegrityError:
-            print("Project '{}' already exists".format(values[0]))

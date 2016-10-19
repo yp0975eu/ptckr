@@ -1,5 +1,6 @@
 import sys
-from Database import Db
+from tables import Table
+from tasks import Task
 
 FILENAME = 0
 COMMAND = 1
@@ -34,8 +35,8 @@ if __name__ == '__main__':
 
     # The Database file is created each time Db is initialized.
     # if filename doesn't exist
-    # calling init method sets up the tables
-    db = Db()
+    # calling init method sets up the tables.py
+
     if len(sys.argv) >= 2:
 
         if sys.argv[COMMAND] == 'init':
@@ -44,8 +45,9 @@ if __name__ == '__main__':
             # if init is called more than once, then do nothing.
             if len(sys.argv) == 2:
 
+                tables = Table()
                 # if table exist then we have already initialized
-                if db.setup_tables():
+                if tables.setup_tables():
                     print("Project initialized.")
                 else:
                     print("Project already initialized.")
@@ -61,15 +63,21 @@ if __name__ == '__main__':
 
             Menu.show_help()
 
+        # if we don't have a project initialized and the create command is used then
+        # initialize the tables.py and then proceed to use the create command
         elif sys.argv[COMMAND] == 'create':
 
             if len(sys.argv) == 3:
 
+                tables = Table()
+                tables.setup_tables()
+
                 task_name = sys.argv[FIRST_ARG]
-                print('Creating task {}'.format(task_name))
+
+                tasks = Task()
+                tasks.create_task(task_name)
 
             else:
-
                 Menu.show_help()
 
         elif sys.argv[COMMAND] == 'select':
