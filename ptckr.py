@@ -26,21 +26,26 @@ class Menu:
         print('\n{0} : {1}'.format('command'.ljust(10), 'usage'))
         print('-----------------------------------------------')
         for option in Menu.top_menu:
-            print('{0} : {1}'.format(option['command'].ljust(10), option['desc']))
+            print('{0} : {1}\n'.format(option['command'].ljust(10), option['desc']))
         quit()
 
 
 if __name__ == '__main__':
     db = Db()
     if len(sys.argv) >= 2:
+
         if sys.argv[COMMAND] == 'init':
 
-            # calling multiple times does nothing
+            # If there is more that one arg, the command prints and error and does nothing
             if len(sys.argv) == 2:
+
                 print("Project initialized.")
+
             else:
+
                 # display error if we have more args then needed
                 print("Incorrect number of arguments")
+
                 Menu.show_help()
 
         elif sys.argv[COMMAND] == 'help':
