@@ -47,7 +47,7 @@ class Table(Database):
 
     def make_table_tasks(self):
         sql = '''CREATE TABLE  IF NOT EXISTS tasks  (
-         name             TEXT NOT NULL
+         name             TEXT NOT NULL UNIQUE
          );'''
         self.make_table(sql)
 

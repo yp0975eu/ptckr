@@ -20,6 +20,7 @@ class Menu:
         {'command': "view", "desc": '\tview [-t]\n\t\tDef: Shows entries for currently selected task.'
                                       ' Use -t to view all tasks'},
     )
+
     project_menu_options = ['Start Time', 'End Time', 'View Entries ']
 
     @staticmethod
