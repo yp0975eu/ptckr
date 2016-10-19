@@ -4,7 +4,7 @@ import sqlite3
 class Db:
     __connection = None
     __cursor = None
-    __database_file_name = "projects.db"
+    __database_file_name = ".projects.db"
     __table_names = ("tasks", "entries", "currently_tracking")
 
     # setup project database
