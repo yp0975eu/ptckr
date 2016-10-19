@@ -31,15 +31,24 @@ class Menu:
 
 
 if __name__ == '__main__':
+
+    # The Database file is created each time Db is initialized.
+    # if filename doesn't exist
+    # calling init method sets up the tables
     db = Db()
     if len(sys.argv) >= 2:
 
         if sys.argv[COMMAND] == 'init':
 
             # If there is more that one arg, the command prints and error and does nothing
+            # if init is called more than once, then do nothing.
             if len(sys.argv) == 2:
 
-                print("Project initialized.")
+                # if table exist then we have already initialized
+                if db.setup_tables():
+                    print("Project already initialized.")
+                else:
+                    print("Project initialized.")
 
             else:
 
