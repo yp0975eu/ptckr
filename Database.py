@@ -5,7 +5,7 @@ class Db:
     __connection = None
     __cursor = None
     __database_file_name = "projects.db"
-    __table_names = ("tracking", 'tasks', 'entries')
+    __table_names = ("currently_tracking", 'tasks', 'entries')
 
     # setup project database
     def __init__(self):
@@ -40,7 +40,7 @@ class Db:
         return count == 1
 
     # Tracking table keeps track of currently selected task, start and end time
-    def make_table_tracking(self):
+    def make_table_currently_tracking(self):
         sql = '''CREATE TABLE IF NOT EXISTS tracking (
          start INTEGER NOT NULL,
          stop INTEGER,
