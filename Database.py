@@ -17,9 +17,16 @@ class Db:
             exit()
 
     def setup_tables(self):
+        # to keep track of existing tables
         existing_tables = []
+
+        # loop through defined tables
         for table in self.__table_names:
+
+            # see if we have the tables already
             if not self.table_exist(table):
+
+                # if we don't have the tables then create them
                 try:
                     # this calls the method named: self.make_table_<table_name>
                     getattr(self, 'make_table_' + table)()
@@ -27,7 +34,12 @@ class Db:
                     print("Error making table. "
                           "Does table '{}' have a corresponding method 'make_table_{}()' ?".format(table, table))
                     print(a_error)
-            existing_tables.append(True)
+            else:
+                # add to list of existing tables
+                existing_tables.append(table)
+
+        # return true if we needed to create tables else false if they already existed.
+        return len(existing_tables) if 0 else False
 
     def table_exist(self, table):
         # SQL from http: // stackoverflow.com / a / 8827554
@@ -59,7 +71,7 @@ class Db:
 
     # Tracking table keeps track of currently selected task, start and end time
     def make_table_currently_tracking(self):
-        sql = '''CREATE TABLE IF NOT EXISTS tracking (
+        sql = '''CREATE TABLE IF NOT EXISTS currently_tracking (
          entry_id INTEGER,
          start INTEGER NOT NULL,
          stop INTEGER,
