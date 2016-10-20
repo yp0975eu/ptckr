@@ -1,6 +1,7 @@
 import sys
 from tables import Table
 from tasks import Task
+from status import Status
 
 FILENAME = 0
 COMMAND = 1
@@ -110,8 +111,8 @@ if __name__ == '__main__':
                 # selected table and getting ready
                 # for creating entries
                 if task.is_loaded():
-
-                    print(task)
+                    status = Status()
+                    status.add_tracking_task(task)
 
                 else:
                     print("Could not load task '{0}'".format(arg1))
