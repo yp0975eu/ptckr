@@ -54,3 +54,20 @@ class Database:
         except sqlite3.ProgrammingError as o_err:
 
             print("Wrong number of args", values, o_err)
+
+            # returns one row
+
+    def delete_sql(self, sql, where=""):
+        # localize the connection to return a Row
+        try:
+
+            cur = self._cursor
+            cur.execute(sql, where)
+
+        except sqlite3.OperationalError as o_err:
+
+            print("Error Deleting", o_err)
+
+        except sqlite3.ProgrammingError as o_err:
+
+            print("Wrong number of args", where, o_err)
