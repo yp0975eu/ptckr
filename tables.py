@@ -80,10 +80,8 @@ class Table(Database):
     def make_table_currently_tracking_entry(self):
         sql = '''CREATE TABLE IF NOT EXISTS tracking_entry (
          tracking_id INTEGER,
-         start INTEGER NOT NULL,
-         stop INTEGER,
-         created_at       TEXT NOT NULL,
-         updated_at       TEXT NOT NULL,
+         start            TEXT NOT NULL,
+         stop             TEXT NOT NULL,
          FOREIGN KEY(tracking_id) REFERENCES tracking_task(ROWID)
          );'''
         self.make_table(sql)
