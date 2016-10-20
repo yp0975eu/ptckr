@@ -5,7 +5,7 @@ from database import *
 class Table(Database):
     """For creating the actual database tables.py"""
 
-    __table_names = ("tasks", "entries", "currently_tracking")
+    __table_names = ("tasks", "entries", "currently_tracking_task", "currently_tracking_entry")
 
     def __init__(self):
         Database.__init__(self)
@@ -28,6 +28,7 @@ class Table(Database):
                     print("Error making table. "
                           "Does table '{}' have a corresponding method 'make_table_{}()' ?".format(table, table))
                     print(a_error)
+                    exit()
             else:
                 # add to list of existing tables.py
                 existing_tables.append(table)
@@ -47,7 +48,9 @@ class Table(Database):
 
     def make_table_tasks(self):
         sql = '''CREATE TABLE  IF NOT EXISTS tasks  (
-         name             TEXT NOT NULL UNIQUE
+         name             TEXT NOT NULL UNIQUE,
+         created_at       TEXT NOT NULL,
+         updated_at       TEXT NOT NULL
          );'''
         self.make_table(sql)
 
@@ -57,17 +60,29 @@ class Table(Database):
          start       TEXT NOT NULL,
          stop        TEXT NOT NULL,
          description TEXT NOT NULL,
+         created_at       TEXT NOT NULL,
+         updated_at       TEXT NOT NULL,
          FOREIGN KEY(task_id) REFERENCES tasks(ROWID)
          );'''
         self.make_table(sql)
 
     # Tracking table keeps track of currently selected task, start and end time
-    def make_table_currently_tracking(self):
-        sql = '''CREATE TABLE IF NOT EXISTS currently_tracking (
-         entry_id INTEGER,
+    def make_table_currently_tracking_task(self):
+        sql = '''CREATE TABLE IF NOT EXISTS tracking_task (
+         task_id INTEGER,
+         FOREIGN KEY(task_id) REFERENCES tasks(ROWID)
+         );'''
+        self.make_table(sql)
+
+    # Tracking table keeps track of currently selected task, start and end time
+    def make_table_currently_tracking_entry(self):
+        sql = '''CREATE TABLE IF NOT EXISTS tracking_entry (
+         tracking_id INTEGER,
          start INTEGER NOT NULL,
          stop INTEGER,
-         FOREIGN KEY(entry_id) REFERENCES entries(ROWID)
+         created_at       TEXT NOT NULL,
+         updated_at       TEXT NOT NULL,
+         FOREIGN KEY(tracking_id) REFERENCES tracking_task(ROWID)
          );'''
         self.make_table(sql)
 
@@ -79,5 +94,7 @@ class Table(Database):
             self._connection.commit()
         except sqlite3.OperationalError as o_err:
             print("Error Making Table", o_err)
+            exit()
         except sqlite3.DatabaseError as db_err:
             print("Database Error while making table", db_err)
+            exit()
