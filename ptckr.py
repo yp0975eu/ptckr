@@ -167,7 +167,5 @@ if __name__ == '__main__':
             print("Don't know that one. Try one of these:")
             Menu.show_help()
     elif len(sys.argv) <= 1:
-        #  Menu.show_help()
+        Menu.show_help()
         # Task().get_task_by_id(1123)
-        status = Status()
-        print(status)
