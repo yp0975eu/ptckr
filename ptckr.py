@@ -125,7 +125,8 @@ if __name__ == '__main__':
 
             if len(sys.argv) == 2:
 
-                print('Show current selected task here')
+                status = Status()
+                print(status)
 
             else:
 
@@ -135,7 +136,7 @@ if __name__ == '__main__':
 
             if len(sys.argv) == 2:
 
-                # if a task is selected then
+                # if a task is selected then add to currently_tracking_table
                 print('Start tracking time for currently selected task')
 
             else:
@@ -166,5 +167,7 @@ if __name__ == '__main__':
             print("Don't know that one. Try one of these:")
             Menu.show_help()
     elif len(sys.argv) <= 1:
-        Menu.show_help()
+        #  Menu.show_help()
         # Task().get_task_by_id(1123)
+        status = Status()
+        print(status)

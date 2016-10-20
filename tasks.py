@@ -12,9 +12,11 @@ class Task(Database):
         self._updated_at = None
 
     def get_task_by_id(self, task_id):
-        sql = """SELECT rowid, name FROM tasks WHERE rowid = (?);"""
+        sql = """SELECT rowid, name, created_at, updated_at FROM tasks WHERE rowid = (?);"""
+
         # Convert to tuple
         values = task_id,
+
         row = self.select_one_sql(sql, values)
 
         if row:
@@ -41,10 +43,11 @@ class Task(Database):
             self.set_task_attributes(row)
 
     def set_task_attributes(self, row):
-        self._row_id = row['rowid']
-        self._name = row['name']
-        self._created_at = row['created_at']
-        self._updated_at = row['updated_at']
+        if isinstance(row, sqlite3.Row):
+            self._row_id = row['rowid']
+            self._name = row['name']
+            self._created_at = row['created_at']
+            self._updated_at = row['updated_at']
 
     def get_row_id(self):
         return self._row_id

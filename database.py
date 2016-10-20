@@ -38,7 +38,7 @@ class Database:
             print("'{}' already exists".format(values[0]))
 
     # returns one row
-    def select_one_sql(self, sql, values):
+    def select_one_sql(self, sql, values=''):
         # localize the connection to return a Row
         try:
             con = self._connection
