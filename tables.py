@@ -70,6 +70,8 @@ class Table(Database):
     def make_table_currently_tracking_task(self):
         sql = '''CREATE TABLE IF NOT EXISTS tracking_task (
          task_id INTEGER,
+         created_at       TEXT NOT NULL,
+         updated_at       TEXT NOT NULL,
          FOREIGN KEY(task_id) REFERENCES tasks(ROWID)
          );'''
         self.make_table(sql)
