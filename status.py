@@ -7,8 +7,14 @@ class Status(Database):
 
     def __init__(self):
         Database.__init__(self)
+
+        # initialize selected task to none
+        self.__selected_task = None
+
+        # see if we are tracking a task in our tracking_task table
         sql = """SELECT task_id, created_at, updated_at FROM tracking_task"""
         row = self.select_one_sql(sql)
+
         if row:
 
             # instantiate a task class
@@ -19,6 +25,7 @@ class Status(Database):
 
             # set task to selected task
             self.__selected_task = task
+            self.__is_tracking = True
 
     def add_tracking_task(self, task):
         self.remove_tracking_tasks()
@@ -34,6 +41,9 @@ class Status(Database):
     def remove_tracking_tasks(self):
         sql = """DELETE  FROM tracking_task"""
         self.delete_sql(sql)
+
+    def is_tracking(self):
+        return self.__selected_task is not None if True else False
 
     def __str__(self):
         if self.__selected_task is not None:

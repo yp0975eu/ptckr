@@ -4,12 +4,14 @@ import datetime
 
 class Task(Database):
 
-    def __init__(self):
+    def __init__(self, row=''):
         Database.__init__(self)
         self._row_id = None
         self._name = None
         self._created_at = None
         self._updated_at = None
+        if row:
+            self.set_task_attributes(row)
 
     def get_task_by_id(self, task_id):
         sql = """SELECT rowid, name, created_at, updated_at FROM tasks WHERE rowid = (?);"""
@@ -67,3 +69,30 @@ class Task(Database):
                 self._updated_at)
         else:
             return "No Task Loaded"
+
+
+class Tasks(Database):
+    """Instantiates all tasks we currently have"""
+
+    def __init__(self):
+        Database.__init__(self)
+        self.__all_tasks = self.load_tasks()
+
+    def get_all_task(self):
+        return self.__all_tasks
+
+    def load_tasks(self):
+        all_tasks = []
+
+        sql = """SELECT rowid, name, created_at, updated_at FROM tasks"""
+
+        rows = self.select_many_sql(sql)
+
+        if rows:
+            for row in rows:
+                all_tasks.append(Task(row))
+
+        return all_tasks
+
+    def __str__(self):
+        return "{0} tasks".format(len(self.__all_tasks))

@@ -57,6 +57,23 @@ class Database:
 
             # returns one row
 
+    def select_many_sql(self, sql, values=''):
+        # localize the connection to return a Row
+        try:
+            con = self._connection
+            con.row_factory = sqlite3.Row
+            cur = con.cursor()
+            cur.execute(sql, values)
+            return cur.fetchall()
+
+        except sqlite3.OperationalError as o_err:
+
+            print("Error Selecting", o_err)
+
+        except sqlite3.ProgrammingError as o_err:
+
+            print("Wrong number of args", values, o_err)
+
     def delete_sql(self, sql, where=""):
         # localize the connection to return a Row
         try:

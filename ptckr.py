@@ -1,6 +1,6 @@
 import sys
 from tables import Table
-from tasks import Task
+from tasks import *
 from status import Status
 
 FILENAME = 0
@@ -118,7 +118,6 @@ if __name__ == '__main__':
                     print("Could not load task '{0}'".format(arg1))
 
             else:
-
                 Menu.show_help()
 
         elif sys.argv[COMMAND] == 'status':
@@ -136,8 +135,11 @@ if __name__ == '__main__':
 
             if len(sys.argv) == 2:
 
-                # if a task is selected then add to currently_tracking_table
-                print('Start tracking time for currently selected task')
+                status = Status()
+                if status.is_tracking():
+
+                    # if a task is selected then add to currently_tracking_table
+                    print('Start tracking time for currently selected task')
 
             else:
 
@@ -159,13 +161,33 @@ if __name__ == '__main__':
         elif sys.argv[COMMAND] == 'view':
             if len(sys.argv) == 2:
                 print('Viewing all entries under currently selected task')
+
             elif len(sys.argv) == 3 and sys.argv[FIRST_ARG] == "-t":
                 print('view all tasks')
+
             else:
                 Menu.show_help()
+
+        elif sys.argv[COMMAND] == 'show':
+
+            if len(sys.argv) == 3 and sys.argv[FIRST_ARG] == "-t":
+
+                tasks = Tasks()
+                print(tasks)
+
+                for task in tasks.get_all_task():
+                    print(task)
+
+            elif len(sys.argv) == 3 and sys.argv[FIRST_ARG] == "-e":
+                print('view all entries')
+
+            else:
+                Menu.show_help()
+
         else:
             print("Don't know that one. Try one of these:")
             Menu.show_help()
+
     elif len(sys.argv) <= 1:
         Menu.show_help()
         # Task().get_task_by_id(1123)
