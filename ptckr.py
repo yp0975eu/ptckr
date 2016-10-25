@@ -2,6 +2,7 @@ import sys
 from tables import Table
 from tasks import *
 from status import Status
+from entry import *
 
 FILENAME = 0
 COMMAND = 1
@@ -14,12 +15,12 @@ class Menu:
         {'command': "init", "desc": '\tinit\n\t\tDef: Initializes a project in current directory'},
         {'command': "help", "desc": '\thelp\n\t\tDef: Shows this help menu'},
         {'command': 'create', 'desc': '\tcreate <task>\n\t\tDef: Creates a new task'},
-        {'command': 'select', 'desc': '\tselect <task>\n\t\tDef: Select a task to track'},
+        {'command': 'select', 'desc': '\tselect <task>\n\t\tDef: Select a task to track or remove a tracking task'},
         {'command': 'status', 'desc': '\tstatus\n\t\tDef: Shows current selected task'},
         {'command': 'start', 'desc': '\tstart\n\t\tDef: Starts tracking time'},
         {'command': 'stop', 'desc': '\tstop\n\t\tDef: Stops tracking time'},
-        {'command': "view", "desc": '\tview [-t]\n\t\tDef: Shows entries for currently selected task.'
-                                      ' Use -t to view all tasks'},
+        {'command': "show", "desc":
+            '\tshow -t|-e\n\t\tDef: -e shows entries for currently selected task. Use -t to view all tasks'}
     )
 
     project_menu_options = ['Start Time', 'End Time', 'View Entries ']
@@ -72,12 +73,20 @@ if __name__ == '__main__':
             if len(sys.argv) == 3:
 
                 tables = Table()
+
                 tables.setup_tables()
 
                 task_name = sys.argv[FIRST_ARG]
 
-                tasks = Task()
-                tasks.create_task(task_name)
+                # task names cannot start with dashes
+                if task_name[0] is not "-":
+
+                    task = Task()
+
+                    task.create_task(task_name)
+
+                else:
+                    print("Task names cannot start with dashes")
 
             else:
                 Menu.show_help()
@@ -91,7 +100,29 @@ if __name__ == '__main__':
 
                 arg1 = sys.argv[FIRST_ARG]
 
+                # only process dashes as directives, prevent processing as leading dashes in a task name
+                # if arg1[0] == '-':
+                #
+                #     if arg1 == '-r':
+                #
+                #         status = Status()
+                #
+                #         if status.is_tracking_task():
+                #
+                #             tracking_task = TrackingTask()
+                #
+                #             tracking_task.remove_tracking_task()
+                #
+                #             print("Removing tracking task")
+                #
+                #         else:
+                #             print("No task loaded")
+                #     else:
+                #         print("Directive not recognized")
+                #
+                # else:
                 # initiate a new task
+
                 task = Task()
 
                 # see if we have a string with all digits
@@ -106,13 +137,14 @@ if __name__ == '__main__':
 
                     task.get_task_by_name(arg1)
 
-                # if the task was able to be loaded enter in into
-                # the activate task by entering it into the
-                # selected table and getting ready
-                # for creating entries
+                # if the task was able to be loaded
+                # activate task by entering it into the
+                # selected table. Ready to track entries
                 if task.is_loaded():
-                    status = Status()
-                    status.add_tracking_task(task)
+
+                    tracking_task = TrackingTask()
+
+                    tracking_task.add_tracking_task(task)
 
                 else:
                     print("Could not load task '{0}'".format(arg1))
@@ -136,10 +168,27 @@ if __name__ == '__main__':
             if len(sys.argv) == 2:
 
                 status = Status()
-                if status.is_tracking():
 
-                    # if a task is selected then add to currently_tracking_table
-                    print('Start tracking time for currently selected task')
+                if status.is_tracking_task():
+
+                    task = status.get_tracking_task()
+
+                    if status.is_tracking_entry():
+
+                        print('You have an open entry')
+                        print('To close an entry use command:\n$ stop')
+                        print('To start a new entry use command:\n$ start')
+
+                    else:
+
+                        # if a task is selected then add to currently_tracking_table
+
+                        tracking_entry = TrackingEntry()
+
+                        tracking_entry.start_tracking(task)
+
+                else:
+                    print('Start tracking a task using command \nselect <taskname>')
 
             else:
 
@@ -149,23 +198,19 @@ if __name__ == '__main__':
 
             if len(sys.argv) == 2:
 
-                # if a task is selected then
-                print('Stop tracking time for currently selected task')
-                print('Enter Message for currently selected task')
-                print('Message saved entry header')
+                status = Status()
 
+                if status.is_tracking_entry():
+
+                    tracking_entry = status.get_tracking_entry()
+
+                    tracking_entry.stop_tracking()
+
+                else:
+                    print('You don\'t have any open entries')
+                    print('To start a new entry use command: start')
             else:
 
-                Menu.show_help()
-
-        elif sys.argv[COMMAND] == 'view':
-            if len(sys.argv) == 2:
-                print('Viewing all entries under currently selected task')
-
-            elif len(sys.argv) == 3 and sys.argv[FIRST_ARG] == "-t":
-                print('view all tasks')
-
-            else:
                 Menu.show_help()
 
         elif sys.argv[COMMAND] == 'show':
@@ -179,7 +224,29 @@ if __name__ == '__main__':
                     print(task)
 
             elif len(sys.argv) == 3 and sys.argv[FIRST_ARG] == "-e":
-                print('view all entries')
+
+                # Timedelta set to 0
+                total_time = Datetime.timedelta()
+
+                # get current tracking task
+                status = Status()
+                task = status.get_tracking_task()
+
+                # all finished entries
+                entries = status.get_all_entries()
+
+                # header for print out
+                print('\n------- All Entries For: {0} ---------'.format(task.get_name()))
+
+                for entry in entries:
+
+                    #
+                    total_time += entry.get_elapse_time()
+                    print(entry)
+
+                print('\n------------- Summary ---------{0}\nTotal Entries: {1}\nTotal Time: {2} (h:m:s)'
+                      '\n-------------------------------\n--------------------------------------------'
+                      .format(task, len(entries), total_time))
 
             else:
                 Menu.show_help()
@@ -189,5 +256,11 @@ if __name__ == '__main__':
             Menu.show_help()
 
     elif len(sys.argv) <= 1:
-        Menu.show_help()
+        # Menu.show_help()
         # Task().get_task_by_id(1123)
+        # e = Entry()
+        # e.update_entries()
+        status = Status()
+
+
+

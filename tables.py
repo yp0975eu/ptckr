@@ -56,33 +56,33 @@ class Table(Database):
 
     def make_table_entries(self):
         sql = '''CREATE TABLE  IF NOT EXISTS entries  (
-         task_id     INTEGER,
+         task_id     INTEGER NOT NULL,
          start       TEXT NOT NULL,
          stop        TEXT NOT NULL,
          description TEXT NOT NULL,
          created_at       TEXT NOT NULL,
          updated_at       TEXT NOT NULL,
-         FOREIGN KEY(task_id) REFERENCES tasks(ROWID)
+         FOREIGN KEY(task_id) REFERENCES tasks(rowid)
          );'''
         self.make_table(sql)
 
     # Tracking table keeps track of currently selected task, start and end time
     def make_table_currently_tracking_task(self):
         sql = '''CREATE TABLE IF NOT EXISTS tracking_task (
-         task_id INTEGER,
+         task_id          INTEGER NOT NULL,
          created_at       TEXT NOT NULL,
          updated_at       TEXT NOT NULL,
-         FOREIGN KEY(task_id) REFERENCES tasks(ROWID)
+         FOREIGN KEY(task_id) REFERENCES tasks(rowid)
          );'''
         self.make_table(sql)
 
     # Tracking table keeps track of currently selected task, start and end time
     def make_table_currently_tracking_entry(self):
         sql = '''CREATE TABLE IF NOT EXISTS tracking_entry (
-         tracking_id INTEGER,
+         task_id          INTEGER NOT NULL,
          start            TEXT NOT NULL,
-         stop             TEXT NOT NULL,
-         FOREIGN KEY(tracking_id) REFERENCES tracking_task(ROWID)
+         stop             TEXT,
+         FOREIGN KEY(task_id) REFERENCES tracking_task(task_id)
          );'''
         self.make_table(sql)
 

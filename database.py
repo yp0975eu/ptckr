@@ -1,5 +1,5 @@
 import sqlite3
-
+import datetime as datetime
 
 class Database:
     """Managing connections and database."""
@@ -19,15 +19,19 @@ class Database:
             exit()
 
     # runs sql with arguments
-    def insert_sql(self, sql, values, success_message):
+    # works with create, update and delete
+
+    def insert_sql(self, sql, values, success_message=None):
         try:
 
-            self._cursor.execute(sql, values)
-
-            self._connection.commit()
+            conn = self._connection
+            cur = self._cursor
+            cur.execute(sql, values)
+            conn.commit()
 
             # if there is no error then print the success message
-            print(success_message)
+            if success_message is not None:
+                print(success_message)
 
         except sqlite3.OperationalError as o_err:
 
@@ -35,7 +39,7 @@ class Database:
 
         except sqlite3.IntegrityError:
 
-            print("'{}' already exists".format(values[0]))
+            print("'{0}' already exists".format(values[0], sql))
 
     # returns one row
     def select_one_sql(self, sql, values=''):
@@ -74,13 +78,14 @@ class Database:
 
             print("Wrong number of args", values, o_err)
 
-    def delete_sql(self, sql, where=""):
-        # localize the connection to return a Row
+    def delete_sql(self, sql, where=None):
         try:
-
             cur = self._cursor
-            cur.execute(sql, where)
-
+            if where:
+                cur.execute(sql, where)
+            else:
+                cur.execute(sql)
+            self._connection.commit()
         except sqlite3.OperationalError as o_err:
 
             print("Error Deleting", o_err)
@@ -88,3 +93,7 @@ class Database:
         except sqlite3.ProgrammingError as o_err:
 
             print("Wrong number of args", where, o_err)
+
+    @staticmethod
+    def get_timestamp():
+        return datetime.datetime.now().__format__("%Y-%m-%d %H:%M:%S")

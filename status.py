@@ -1,4 +1,5 @@
 from tasks import *
+from entry import *
 
 
 class Status(Database):
@@ -8,45 +9,59 @@ class Status(Database):
     def __init__(self):
         Database.__init__(self)
 
-        # initialize selected task to none
-        self.__selected_task = None
+        # initialize attributes to None
+        self.__tracking_task = None
+
+        self.__tracking_entry = None
+
+        self.__all_entries = []
 
         # see if we are tracking a task in our tracking_task table
-        sql = """SELECT task_id, created_at, updated_at FROM tracking_task"""
-        row = self.select_one_sql(sql)
+        tracking_task = TrackingTask()
 
-        if row:
-
-            # instantiate a task class
-            task = Task()
-
-            # load task by id
-            task.get_task_by_id(row['task_id'])
+        if tracking_task.is_loaded():
 
             # set task to selected task
-            self.__selected_task = task
-            self.__is_tracking = True
 
-    def add_tracking_task(self, task):
-        self.remove_tracking_tasks()
-        sql = """INSERT INTO tracking_task(task_id, created_at, updated_at) VALUES(?,?,?)"""
-        task_id = task.get_row_id()
-        created_at = update_at = datetime.datetime.now()
-        values = (task_id, created_at, update_at)
-        self.insert_sql(sql, values, "Selected task: {0}".format(task.get_name()))
+            self.__tracking_task = tracking_task
 
-    def add_tracking_entry(self, entry):
-        pass
+            # load all completed entries
+            entry = Entry()
 
-    def remove_tracking_tasks(self):
-        sql = """DELETE  FROM tracking_task"""
-        self.delete_sql(sql)
+            entries = entry.get_all_entries(self.__tracking_task.get_row_id())
 
-    def is_tracking(self):
-        return self.__selected_task is not None if True else False
+            for entry_row in entries:
+                self.__all_entries.append(Entry(entry_row))
+
+            # load tracking entry
+            tracking_entry = TrackingEntry()
+
+            if tracking_entry.is_loaded():
+
+                self.__tracking_entry = tracking_entry
+
+    def is_tracking_task(self):
+        return self.__tracking_task is not None
+
+    def is_tracking_entry(self):
+        return self.__tracking_entry is not None
+
+    def get_tracking_task(self):
+        return self.__tracking_task
+
+    def get_tracking_entry(self):
+        return self.__tracking_entry
+
+    def get_all_entries(self):
+        return self.__all_entries
 
     def __str__(self):
-        if self.__selected_task is not None:
-            return "\nSelected task:" + self.__selected_task.__str__()
+        task = self.__tracking_task.__str__()
+
+        if self.is_tracking_entry():
+            entry = self.__tracking_entry.__str__()
         else:
-            return "No task selected"
+            entry = "Not tracking an entry"
+
+        return "\nSelected task ------------\n{0}\n{1}".format(task, entry)
+
