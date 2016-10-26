@@ -6,9 +6,9 @@ Required :
 
 
 How A Project is Organized:
-- Project
-- - Task
-- - - Entry
+ - Project
+ - - Task
+ - - - Entry
 
 ###How to get started:
 1. To create a project use the `init` command from the root directory
